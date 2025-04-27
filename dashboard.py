@@ -4,7 +4,6 @@ from datetime import datetime, date
 from src.agent import WaterIntakeAgent
 from src.database import log_intake, get_intake_history , delete_user_history
 
-# Initialize session
 if "tracker_started" not in st.session_state:
     st.session_state.tracker_started = False
 
@@ -28,10 +27,7 @@ if not st.session_state.tracker_started:
 else:
     st.title("📈 AI Hydration Tracker Dashboard")
 
-    # Sidebar - Tips + Inputs
     st.sidebar.header("🚰 Log Your Water Intake")
-    
-    # 🔥 Hydration Tips
     st.sidebar.markdown("💡 **Quick Hydration Tips:**")
     st.sidebar.markdown("🥤 Drink a glass of water before every meal.")
     st.sidebar.markdown("💻 Keep a bottle next to your laptop or desk.")
@@ -39,8 +35,6 @@ else:
     st.sidebar.markdown("⏰ Sip water every 30 minutes, not just when thirsty.")
     st.sidebar.markdown("🍋 Flavor water with lemon or mint if it feels boring.")
 
-
-# 👥 Multi-user support
 user_list = ["user_1", "user_2", "Add New User"]
 selected_user = st.sidebar.selectbox("Select User", options=user_list)
 
@@ -49,32 +43,28 @@ if selected_user == "Add New User":
 else:
     user_id = selected_user
 
-# 🗑️ Delete user history option (move here, after user_id is set)
 st.sidebar.markdown("---")
 st.sidebar.markdown("<h3 style='color:red;'>⚠️ Danger Zone</h3>", unsafe_allow_html=True)
 
 if st.sidebar.button("Delete User History"):
-    st.session_state.confirm_delete = True  # Set a session flag
+    st.session_state.confirm_delete = True  
 
 if st.session_state.get("confirm_delete", False):
     if st.sidebar.button("✅ Confirm Delete"):
         if user_id:
             delete_user_history(user_id)
             st.success(f"🗑️ Deleted all hydration history for `{user_id}`")
-            st.session_state.confirm_delete = False  # Reset flag
+            st.session_state.confirm_delete = False  
             st.rerun()
     if st.sidebar.button("❌ Cancel"):
-        st.session_state.confirm_delete = False  # Reset flag
+        st.session_state.confirm_delete = False 
 
-    # 🎯 Flash last deleted user
 if "last_deleted_user" in st.session_state:
         st.sidebar.info(f"🗂️ Last Deleted User: `{st.session_state.last_deleted_user}`")
 
-# 🥤 Intake input (after delete option)
 intake_ml = st.sidebar.number_input("Water Intake (ml)", min_value=0, max_value=1000)
 daily_goal = st.sidebar.number_input("Set Your Daily Goal (ml)", min_value=500, max_value=10000, step=100, value=7000)
 
-# Submit intake
 if st.sidebar.button("Submit"):
     if user_id and intake_ml > 0:
         log_intake(user_id, intake_ml)
@@ -83,7 +73,6 @@ if st.sidebar.button("Submit"):
         agent = WaterIntakeAgent()
         feedback = agent.analyze_intake(intake_ml)
 
-        # 🌟 Custom Emoji Feedback
         if "good" in feedback.lower() or "well" in feedback.lower():
             st.info(f"🥤 {feedback}")
         elif "drink more" in feedback.lower() or "increase" in feedback.lower():
@@ -106,9 +95,9 @@ if st.sidebar.button("Submit"):
             for row in history:
                 ts = row[1]
                 try:
-                    dt = datetime.strptime(ts, "%d-%m-%y %H:%M:%S")  # timestamp entries
+                    dt = datetime.strptime(ts, "%d-%m-%y %H:%M:%S")  
                 except ValueError:
-                    dt = datetime.strptime(ts, "%d-%m-%y")  # fallback for old data
+                    dt = datetime.strptime(ts, "%d-%m-%y") 
                 dates.append(dt)
 
             values = [row[0] for row in history]
@@ -118,7 +107,6 @@ if st.sidebar.button("Submit"):
                 "Water Intake (ml)": values
             })
 
-            # 📄 Export Button
             csv = df.to_csv(index=False).encode('utf-8')
             st.download_button(
                 label="📥 Download Intake History as CSV",
@@ -127,10 +115,8 @@ if st.sidebar.button("Submit"):
                 mime='text/csv',
             )
 
-            # 📊 Data Table
             st.dataframe(df)
 
-            # 📈 Line Chart
             st.line_chart(df, x="Date & Time", y="Water Intake (ml)")
 
             # -------------------------------------
@@ -149,7 +135,6 @@ if st.sidebar.button("Submit"):
                 )
             ])
 
-            # 📈 Progress Bar + Summary Cards
             col1, col2, col3 = st.columns(3)
             col1.metric("Today's Intake", f"{today_total} ml")
             col2.metric("Goal", f"{daily_goal} ml")
