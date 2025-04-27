@@ -1,0 +1,4 @@
+2025-04-22 15:38:11,312 - INFO -HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-04-22 15:38:11,315 - ERROR -Error analyzing intake: Error code: 404 - {'error': {'message': 'The model `gpt-4` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+2025-04-22 20:52:22,564 - INFO -HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-22 20:52:22,579 - INFO -user user_1 logged 2000ml
